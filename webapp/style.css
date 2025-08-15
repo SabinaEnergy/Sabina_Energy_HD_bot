@@ -1,40 +1,46 @@
-:root{
-  --violet:#7D3CFF;
-  --orange:#FF6A00;
-  --bg:#121214;
-  --card:#1b1b1f;
-  --muted:#a8a8b3;
-  --ring: rgba(125,60,255,.35);
-}
-*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-body{margin:0;background:linear-gradient(180deg,var(--bg),#0f0f12);color:#fff}
-.wrap{max-width:520px;margin:0 auto;padding:24px}
-h1{font-size:24px;margin:0 0 16px;background:linear-gradient(90deg,var(--violet),var(--orange));-webkit-background-clip:text;color:transparent}
-form{background:var(--card);padding:16px;border-radius:14px;border:1px solid #29292e}
-label{display:block;font-size:14px;margin-bottom:10px;color:#eaeaf0}
-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #303036;background:#141418;color:#fff;font-size:16px;outline:none}
-input:focus{border-color:var(--violet);box-shadow:0 0 0 4px var(--ring)}
-.row{display:flex;gap:8px;margin:8px 0 16px}
-.tab{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #303036;background:#141418;color:#fff;cursor:pointer}
-.tab.active{border-color:var(--orange);background:#1d1712}
-.primary{width:100%;padding:14px 16px;border:none;border-radius:12px;background:linear-gradient(90deg,var(--violet),var(--orange));color:#fff;font-weight:700;font-size:16px;margin-top:6px;cursor:pointer}
-.primary:active{transform:translateY(1px)}
-.note{color:var(--muted);font-size:12px;margin-top:12px}
-.consent{display:flex;align-items:flex-start;gap:8px;margin:8px 0 6px}
-.consent input{width:auto}
-a{color:#d7b6ff}
+/* Подключаем красивый шрифт */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
-/* Автодополнение города */
-.autocomplete{position:relative}
-.suggestions{
-  position:absolute;left:0;right:0;top:100%;z-index:10;
-  background:#1a1a1e;border:1px solid #2a2a30;border-radius:10px;
-  margin-top:6px;max-height:220px;overflow:auto;
-  box-shadow:0 10px 24px rgba(0,0,0,.35)
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff6a88, #ff5e78);
+    background-size: 300% 300%;
+    animation: gradientBG 8s ease infinite;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
 }
-.suggestions .opt{
-  padding:10px 12px;cursor:pointer;border-bottom:1px solid #24242a
+
+/* Плавная анимация градиента */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
-.suggestions .opt:last-child{border-bottom:none}
-.suggestions .opt:hover{background:#23232a}
-.small{color:#a9a9b2;font-size:12px}
+
+.container {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 30px 50px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
