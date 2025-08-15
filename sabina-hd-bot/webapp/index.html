@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Рассчёт рейв-карты — Sabina Energy</title>
+  <link rel="stylesheet" href="/hd/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/imask"></script>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Рассчёт рейв-карты</h1>
+
+    <form id="hdForm" autocomplete="off">
+      <label>Дата рождения
+        <input type="text" id="date" inputmode="numeric" placeholder="дд.мм.гггг" required>
+      </label>
+
+      <label>Время рождения
+        <input type="text" id="time" inputmode="numeric" placeholder="чч:мм" required>
+      </label>
+
+      <label>Место рождения</label>
+      <div class="autocomplete">
+        <input type="text" id="city" placeholder="Начните вводить город" required>
+        <div id="cityList" class="suggestions" hidden></div>
+      </div>
+
+      <div class="row">
+        <button type="button" id="male" class="tab active">Муж</button>
+        <button type="button" id="female" class="tab">Жен</button>
+      </div>
+
+      <label>Имя
+        <input type="text" id="name" placeholder="Как к вам обращаться">
+      </label>
+
+      <label class="consent">
+        <input type="checkbox" id="agree" required>
+        <span>Нажимая «Рассчитать», вы соглашаетесь с <a href="/privacy" target="_blank">политикой конфиденциальности</a>.</span>
+      </label>
+
+      <button type="submit" class="primary">Рассчитать</button>
+    </form>
+
+    <p class="note">Если форма не открылась в Telegram, вернитесь в чат и нажмите кнопку ещё раз.</p>
+  </div>
+
+  <script src="/hd/app.js"></script>
+</body>
+</html>
