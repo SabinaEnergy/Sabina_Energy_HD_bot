@@ -1,39 +1,48 @@
-/* Общие стили */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f7f7f7;
-    color: #333;
-}
-
-/* Контейнер */
-.container {
-    max-width: 900px;
-    margin: 50px auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Заголовки */
-h1, h2, h3 {
-    text-align: center;
-    color: #444;
-}
-
-/* Кнопки */
-button {
-    background-color: #4CAF50;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #ff6a00, #ff0084);
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
-button:hover {
-    background-color: #45a049;
+.container {
+    max-width: 500px;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 1.2em;
+}
+
+p span {
+    font-weight: bold;
+    color: #ffe600;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #ffe600;
+    color: #ff0084;
+    font-weight: bold;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background-color: white;
+    color: #ff0084;
 }
