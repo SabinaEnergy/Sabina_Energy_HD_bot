@@ -1,46 +1,65 @@
-/* Подключаем красивый шрифт */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff6a88, #ff5e78);
-    background-size: 300% 300%;
-    animation: gradientBG 8s ease infinite;
-    color: white;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    text-align: center;
+:root{
+  --bg:#0d0d12;
+  --card:#151723;
+  --primary:#ff5e78;
+  --accent:#ffd66e;
+  --text:#f2f3f7;
+  --muted:#98a0b3;
 }
 
-/* Плавная анимация градиента */
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Montserrat',system-ui,Arial,sans-serif;
+  background: radial-gradient(60% 80% at 70% 0%, #2a1b36 0%, #0d0d12 60%);
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
 }
 
-.container {
-    background: rgba(0, 0, 0, 0.4);
-    padding: 30px 50px;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+.card{
+  width:min(720px,100%);
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:28px 24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
 }
 
-h1 {
-    font-size: 3em;
-    margin-bottom: 10px;
-}
+h1{margin:0 0 18px;font-size:28px;font-weight:700;letter-spacing:.2px}
 
-h2 {
-    font-size: 1.8em;
-    margin-bottom: 20px;
+.grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:16px;
 }
+label{display:flex;flex-direction:column;gap:8px;font-weight:600}
+label.full{grid-column:1/-1}
 
-p {
-    font-size: 1.2em;
-    opacity: 0.9;
+input,select,button{
+  appearance:none; -webkit-appearance:none;
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.14);
+  background:#0f111a;
+  color:var(--text);
+  font-size:16px;
+  outline:none;
 }
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,214,110,.2)}
+
+button{
+  margin-top:12px;
+  background:linear-gradient(135deg, var(--primary), #ff6a00);
+  font-weight:700; letter-spacing:.3px;
+  border:none; cursor:pointer;
+  transition:transform .08s ease, filter .15s ease;
+}
+button:active{transform:translateY(1px)}
+button[disabled]{opacity:.6;cursor:not-allowed}
+
+.hint{color:var(--muted);font-size:12px;margin-top:6px}
+.muted{color:var(--muted);font-size:12px;margin:14px 2px 0}
+@media (max-width:640px){ .grid{grid-template-columns:1fr} }
