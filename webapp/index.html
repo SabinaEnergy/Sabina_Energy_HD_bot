@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Design</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Твоя карта Human Design</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Твоя карта Human Design</h1>
-    <p>Добро пожаловать в Sabina Energy HD Bot 🌟</p>
+    <div class="container">
+        <h1>Твоя карта Human Design</h1>
+        <p>Добро пожаловать в <span>Sabina Energy HD Bot</span> 🌟</p>
+        <a href="/" class="btn">Начать</a>
+    </div>
 </body>
 </html>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
