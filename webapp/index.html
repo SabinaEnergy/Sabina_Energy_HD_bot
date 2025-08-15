@@ -1,17 +1,57 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Твоя карта Human Design</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Рассчёт бодиграфа — Sabina Energy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Твоя карта Human Design</h1>
-        <p>Добро пожаловать в <span>Sabina Energy HD Bot</span> 🌟</p>
-        <a href="/" class="btn">Начать</a>
-    </div>
+  <div class="card">
+    <h1>Рассчёт бодиграфа</h1>
+
+    <form id="hdForm">
+      <div class="grid">
+        <label>
+          Имя
+          <input type="text" name="name" placeholder="Например, Сабина" required>
+        </label>
+
+        <label>
+          Пол
+          <select name="gender" required>
+            <option value="">Выберите…</option>
+            <option value="Жен">Жен</option>
+            <option value="Муж">Муж</option>
+          </select>
+        </label>
+
+        <label>
+          Дата рождения
+          <input type="date" name="date" required>
+        </label>
+
+        <label>
+          Время рождения
+          <input type="time" name="time" required>
+        </label>
+
+        <label class="full">
+          Город рождения
+          <input type="text" name="city" id="city" placeholder="Начните вводить…" autocomplete="off" required list="citylist">
+          <datalist id="citylist"></datalist>
+          <small class="hint">Подсказки подтягиваются из OpenStreetMap</small>
+        </label>
+      </div>
+
+      <button type="submit" id="submitBtn">Рассчитать</button>
+    </form>
+
+    <p class="muted">Нажимая «Рассчитать», вы соглашаетесь с обработкой персональных данных.</p>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
