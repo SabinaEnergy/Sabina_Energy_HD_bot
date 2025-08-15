@@ -1,17 +1,14 @@
-from flask import Flask, send_from_directory
-import os
+from flask import Flask, render_template
 
-app = Flask(__name__, static_folder="webapp", static_url_path="/hd")
+app = Flask(__name__, template_folder="webapp")
 
-@app.get("/")
-def index():
+@app.route("/")
+def home():
     return "OK"
 
-@app.get("/hd")
-def webapp_index():
-    return send_from_directory("webapp", "index.html")
+@app.route("/hd")
+def hd_form():
+    return render_template("index.html")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    app.run(host="0.0.0.0", port=port)
-
+    app.run(host="0.0.0.0", port=8080)
