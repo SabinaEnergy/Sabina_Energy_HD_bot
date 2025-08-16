@@ -1,15 +1,16 @@
-# app.py — версия со страницей /hd, /set-webhook и /get-webhook-info
+# app.py — универсально: Telegram + браузер, с редиректом
 import os, json, requests
 from urllib.parse import urlsplit, urlunsplit, parse_qs, urlencode
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 
-# Flask: шаблоны в webapp/, статика в webapp/static по /static
-app = Flask(__name__,
-            template_folder="webapp",
-            static_folder="webapp/static",
-            static_url_path="/static")
+app = Flask(
+    __name__,
+    template_folder="webapp",
+    static_folder="webapp/static",
+    static_url_path="/static",
+)
 
-# ==== ENV (Render → Settings → Environment) ====
+# ==== ENV ====
 BOT_TOKEN    = os.getenv("BOT_TOKEN", "")
 BASE_URL     = os.getenv("BASE_URL", "https://sabina-energy-hd-bot.onrender.com")
 WEBAPP_URL   = os.getenv("WEBAPP_URL", f"{BASE_URL}/hd")
@@ -19,7 +20,6 @@ SECRET_TOKEN = os.getenv("SECRET_TOKEN", "SabinaSecret")
 
 TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-# UTM по умолчанию
 FIXED_UTM = {
     "utm_source": "telegram",
     "utm_medium": "bot",
@@ -39,14 +39,10 @@ def build_keyboard():
     }
 
 def build_redirect_url(base_url: str, payload: dict) -> str:
-    """
-    Собираем URL вида:
-    https://human-design.space?...&date=...&time=...&city=...&utm_...
-    """
     parts = urlsplit(base_url)
     qs = parse_qs(parts.query, keep_blank_values=True)
 
-    # проставим utm, если их нет
+    # UTM по умолчанию
     for k, v in FIXED_UTM.items():
         qs.setdefault(k, [v])
 
@@ -61,25 +57,39 @@ def build_redirect_url(base_url: str, payload: dict) -> str:
     new_query = urlencode(qs, doseq=True, encoding="utf-8", safe=" .-_:")
     return urlunsplit((parts.scheme, parts.netloc, parts.path, new_query, parts.fragment))
 
-# --- здоровье
+# ---- health
 @app.get("/")
 def health():
     return "OK"
 
-# --- страница формы /hd (важно: передаем redirect_base в шаблон)
+# ---- страница формы
 @app.get("/hd")
 def hd():
     return render_template("index.html", redirect_base=DIRECT_LINK)
 
-# --- поставить вебхук
+# ---- браузерный submit: 302 redirect на human-design.space
+@app.post("/hd/submit")
+def hd_submit():
+    fd = request.form
+    payload = {
+        "name":   (fd.get("name")   or "").strip(),
+        "gender": (fd.get("gender") or "").strip(),
+        "date":   (fd.get("date")   or "").strip(),
+        "time":   (fd.get("time")   or "").strip(),
+        "city":   (fd.get("city")   or "").strip(),
+    }
+    link = build_redirect_url(DIRECT_LINK, payload)
+    return redirect(link, code=302)
+
+# ---- поставить вебхук
 @app.get("/set-webhook")
 def set_webhook():
     if not BOT_TOKEN:
         return jsonify({"ok": False, "error": "BOT_TOKEN is empty"})
-    url = f"{BASE_URL}/tg/webhook"
+    webhook_url = f"{BASE_URL}/tg/webhook"
     r = requests.get(
         f"{TG_API}/setWebhook",
-        params={"url": url, "secret_token": SECRET_TOKEN},
+        params={"url": webhook_url, "secret_token": SECRET_TOKEN},
         timeout=10
     )
     try:
@@ -87,7 +97,7 @@ def set_webhook():
     except Exception:
         return r.text, r.status_code
 
-# --- посмотреть состояние вебхука
+# ---- состояние вебхука
 @app.get("/get-webhook-info")
 def get_webhook_info():
     r = requests.get(f"{TG_API}/getWebhookInfo", timeout=10)
@@ -96,10 +106,10 @@ def get_webhook_info():
     except Exception:
         return r.text, r.status_code
 
-# --- приём апдейтов Telegram
+# ---- приём апдейтов Telegram
 @app.post("/tg/webhook")
 def webhook():
-    # защита по секрету, который мы передаём в setWebhook
+    # защита
     if request.headers.get("X-Telegram-Bot-Api-Secret-Token") != SECRET_TOKEN:
         return "forbidden", 403
 
@@ -108,18 +118,16 @@ def webhook():
     chat_id = (msg.get("chat") or {}).get("id")
     text = msg.get("text") or ""
 
-    # /start — отправим клавиатуру
+    # /start → клавиатура
     if chat_id and text.startswith("/start"):
-        tg(
-            "sendMessage",
-            chat_id=chat_id,
-            text=("Привет! Это помощник Sabina Energy по Human Design.\n\n"
-                  "Нажми «Рассчитать бодиграф», заполни форму и получишь ссылку на расчёт."),
-            reply_markup=build_keyboard(),
-        )
+        tg("sendMessage",
+           chat_id=chat_id,
+           text=("Привет! Это помощник Sabina Energy по Human Design.\n\n"
+                 "Нажми «Рассчитать бодиграф», заполни форму и получишь ссылку на расчёт."),
+           reply_markup=build_keyboard())
         return "ok"
 
-    # данные из Telegram WebApp (приходят, если форму открывали из чата)
+    # данные из Telegram WebApp
     web = msg.get("web_app_data")
     if chat_id and web:
         try:
