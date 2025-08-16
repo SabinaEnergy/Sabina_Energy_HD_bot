@@ -1,57 +1,24 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Рассчёт бодиграфа — Sabina Energy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body>
-  <div class="card">
-    <h1>Рассчёт бодиграфа</h1>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+document.getElementById("form").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    <form id="hdForm">
-      <div class="grid">
-        <label>
-          Имя
-          <input type="text" name="name" placeholder="Например, Сабина" required>
-        </label>
+    const payload = {
+        name: document.getElementById("name").value,
+        gender: document.getElementById("gender").value,
+        date: document.getElementById("date").value,
+        time: document.getElementById("time").value,
+        city: document.getElementById("city").value
+    };
 
-        <label>
-          Пол
-          <select name="gender" required>
-            <option value="">Выберите…</option>
-            <option value="Жен">Жен</option>
-            <option value="Муж">Муж</option>
-          </select>
-        </label>
-
-        <label>
-          Дата рождения
-          <input type="date" name="date" required>
-        </label>
-
-        <label>
-          Время рождения
-          <input type="time" name="time" required>
-        </label>
-
-        <label class="full">
-          Город рождения
-          <input type="text" name="city" id="city" placeholder="Начните вводить…" autocomplete="off" required list="citylist">
-          <datalist id="citylist"></datalist>
-          <small class="hint">Подсказки подтягиваются из OpenStreetMap</small>
-        </label>
-      </div>
-
-      <button type="submit" id="submitBtn">Рассчитать</button>
-    </form>
-
-    <p class="muted">Нажимая «Рассчитать», вы соглашаетесь с обработкой персональных данных.</p>
-  </div>
-
-  <script src="{{ url_for('static', filename='app.js') }}"></script>
-</body>
-</html>
+    if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
+        // Открыто внутри Telegram
+        Telegram.WebApp.sendData(JSON.stringify(payload));
+        Telegram.WebApp.close();
+    } else {
+        // Открыто в браузере
+        const params = new URLSearchParams(payload).toString();
+        window.location.href = "{{ redirect_base }}" + "?" + params;
+    }
+});
+</script>
