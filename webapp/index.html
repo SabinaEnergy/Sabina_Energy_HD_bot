@@ -1,173 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Рассчёт бодиграфа — Sabina Energy</title>
-
-  <!-- Шрифт + твой CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Небольшой запасной стиль (если style.css пустой) -->
-  <style>
-    :root{--bg:#0d0d12;--card:#151723;--text:#f2f3f7;--muted:#98a0b3;--primary:#ff5e78;--accent:#ffd66e}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:'Montserrat',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .card{width:min(720px,100%);background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-    h1{margin:0 0 16px;font-size:26px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    label{display:flex;flex-direction:column;gap:6px;font-weight:600}
-    label.full{grid-column:1/-1}
-    input,select,button{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:#0f111a;color:#fff;font-size:16px;outline:none}
-    input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,214,110,.2)}
-    button{margin-top:6px;background:linear-gradient(135deg,var(--primary),#ff6a00);border:none;font-weight:700;cursor:pointer}
-    button[disabled]{opacity:.6;cursor:not-allowed}
-    .hint{color:var(--muted);font-size:12px}
-    @media (max-width:640px){.grid{grid-template-columns:1fr}}
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Твоя карта Human Design</title>
+  <link rel="stylesheet" href="/hd/static/style.css" />
 </head>
 <body>
-  <div class="card">
-    <h1>Рассчёт бодиграфа</h1>
+  <div class="wrap">
+    <h1>Твоя карта Human Design</h1>
 
-    <!-- ВАЖНО: у формы есть action=/hd/submit, method=post -->
-    <form id="hdForm" action="/hd/submit" method="post" autocomplete="off">
-      <div class="grid">
+    <form id="hd-form" class="card">
+      <div class="row">
         <label>Имя
-          <input type="text" name="name" required placeholder="Например, Сабина">
+          <input id="name" type="text" placeholder="Анна" />
         </label>
-
         <label>Пол
-          <select name="gender" required>
-            <option value="">Выберите…</option>
+          <select id="gender">
             <option value="Жен">Жен</option>
             <option value="Муж">Муж</option>
           </select>
         </label>
+      </div>
 
+      <div class="row">
         <label>Дата рождения
-          <input type="date" name="date" required>
+          <input id="date" type="date" />
         </label>
-
         <label>Время рождения
-          <input type="time" name="time" required>
-        </label>
-
-        <label class="full">Город рождения
-          <input type="text" name="city" id="city" list="citylist" placeholder="Начните вводить…" required>
-          <datalist id="citylist"></datalist>
-          <small class="hint">Подсказки подтягиваются из OpenStreetMap</small>
+          <input id="time" type="time" />
         </label>
       </div>
 
-      <button type="submit" id="submitBtn">Рассчитать</button>
+      <label>Город рождения
+        <input id="city" type="text" placeholder="Москва" />
+      </label>
+
+      <label>E-mail
+        <input id="email" type="email" placeholder="name@mail.com" />
+      </label>
+
+      <p class="hint">После отправки откроется расчёт на human-design.space</p>
+
+      <button id="submit" type="submit">Отправляем…</button>
     </form>
   </div>
 
-  <!-- Базовая реф-ссылка из бэка (на всякий случай) -->
-  <script>window.REDIRECT_BASE="{{ redirect_base }}";</script>
-
-  <script>
-  (function () {
-    const tg = window.Telegram?.WebApp;
-
-    // Аккуратная проверка, что мы действительно в Telegram
-    const inTelegram =
-      typeof Telegram !== 'undefined' &&
-      Telegram.WebApp &&
-      ((Telegram.WebApp.initData && Telegram.WebApp.initData.length > 0) || Telegram.WebApp.platform);
-
-    if (inTelegram) {
-      try { tg.expand(); tg.MainButton && tg.MainButton.hide(); } catch (_) {}
-    }
-
-    // ---- автоподсказки городов (Nominatim)
-    const cityInput = document.getElementById('city');
-    const datalist = document.getElementById('citylist');
-    let timer = null;
-    cityInput.addEventListener('input', () => {
-      const q = cityInput.value.trim();
-      if (q.length < 3) { datalist.innerHTML = ''; return; }
-      clearTimeout(timer);
-      timer = setTimeout(async () => {
-        try {
-          const r = await fetch(
-            'https://nominatim.openstreetmap.org/search?format=json&accept-language=ru&q=' + encodeURIComponent(q),
-            { headers: { 'User-Agent': 'SabinaEnergyHD/1.0' } }
-          );
-          const data = await r.json();
-          datalist.innerHTML = data.slice(0, 7).map(item => {
-            const city = item.display_name.split(',')[0];
-            return `<option value="${city}">`;
-          }).join('');
-        } catch (e) { console.log(e); }
-      }, 350);
-    });
-
-    // ---- Конструктор ссылки (на случай tg.openLink)
-    const FIXED_UTM = { utm_source:'telegram', utm_medium:'bot', utm_campaign:'sabina_hd_bot' };
-    function buildRedirectUrl(base, payload) {
-      try {
-        const url = new URL(base || 'https://human-design.space?rave=7366406054640513');
-        Object.entries(FIXED_UTM).forEach(([k,v])=>{
-          if (!url.searchParams.has(k)) url.searchParams.set(k, v);
-        });
-        Object.entries(payload).forEach(([k,v])=>{
-          if (v && String(v).trim()) url.searchParams.set(k, String(v).trim());
-        });
-        return url.toString();
-      } catch { return base; }
-    }
-
-    // ---- отправка формы
-    const form = document.getElementById('hdForm');
-    const submitBtn = document.getElementById('submitBtn');
-
-    form.addEventListener('submit', (e) => {
-      if (!inTelegram) {
-        // НЕ Telegram → не перехватываем: форма уйдёт на /hd/submit, а сервер ответит 302 Redirect
-        return;
-      }
-
-      // Telegram → перехватываем и отправляем sendData + openLink
-      e.preventDefault();
-
-      const fd = new FormData(form);
-      const payload = {
-        name:   (fd.get('name')   || '').trim(),
-        gender: fd.get('gender')  || '',
-        date:   (fd.get('date')    || ''),
-        time:   (fd.get('time')    || ''),
-        city:   (fd.get('city')   || '').trim(),
-      };
-
-      if (!payload.name || !payload.gender || !payload.date || !payload.time || !payload.city) {
-        alert('Заполни, пожалуйста, все поля.');
-        return;
-      }
-
-      submitBtn.disabled = true; submitBtn.textContent = 'Отправляем…';
-
-      const link = buildRedirectUrl(window.REDIRECT_BASE || '', payload);
-
-      try {
-        // 1) отправим данные в бота (он пришлёт кнопку)
-        tg && tg.sendData && tg.sendData(JSON.stringify(payload));
-        // 2) сразу откроем ссылку
-        if (tg && tg.openLink) tg.openLink(link); else window.location.href = link;
-        // 3) закроем webview
-        setTimeout(() => { try { tg.close && tg.close(); } catch(_) {} }, 400);
-      } catch (err) {
-        console.error(err);
-        alert('Не удалось отправить. Попробуй ещё раз.');
-        submitBtn.disabled = false; submitBtn.textContent = 'Рассчитать';
-      }
-    });
-  })();
-  </script>
+  <!-- Telegram WebApp SDK (не мешает обычному браузеру) -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="/hd/app.js"></script>
 </body>
 </html>
